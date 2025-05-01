@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/*",
+                "${workspaceFolder}/src/**",
+                "${workspaceFolder}/Libraries/**",
+                "${workspaceFolder}/sqlite"
+            ],
+            "defines": [
+                "_DEBUG"
+            ],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}
