@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.json": "jsonl",
         "*.jinja": "jinja-html",
         "*.inc": "c",
         "assert.h": "c",
@@ -38,7 +39,13 @@
         "store.h": "c",
         "login.h": "c",
         "sqlite3.h": "c",
-        "raylib.h": "c"
+        "raylib.h": "c",
+        "create_charactere.h": "c",
+        "ui_style.h": "c",
+        "database.h": "c",
+        "credit_card.h": "c",
+        "game.h": "c",
+        "time.h": "c"
     },
     "cmake.configureOnOpen": false
 }

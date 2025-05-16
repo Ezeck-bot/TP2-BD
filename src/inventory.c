@@ -1,16 +1,12 @@
-#include "store.h"
+#include "inventory.h"
 #include "database.h"
 
 #include "ui_style.h"
 
 #include "raygui.h"
-
 #define NUM_ELEMENTS 6
 
-int choix_id_items = 0;
-int choix_value_items = 0;
-
-void ui_store(GameData* g){
+void ui_inventory(GameData* g){
     Vector2 cursor = {.x=g->win.w * 0.5f,.y = g->win.h * 0.5f - (TEXTBOX_HEIGHT +PADDING) * NUM_ELEMENTS};
 
     Rectangle bounds_stats = {
@@ -28,7 +24,7 @@ void ui_store(GameData* g){
     }
 
     int count;
-    Item* items_bd = (Item*)data_see_items(g, &count);
+    Inventaire* inventaire_bd = (Inventaire*)database_show_inventory(g, &count);
 
     float itemWidth = g->win.w * 0.20f; // Largeur d'un item (20% de la largeur de la fenêtre)
     float spacing = PADDING; // Espacement horizontal entre les items
@@ -52,35 +48,12 @@ void ui_store(GameData* g){
         };
 
         char info_items[20];
-        sprintf(info_items, "%s - price : %d ggbucks", items_bd[i].name, items_bd[i].value); 
+        sprintf(info_items, "%s - price : %d ggbucks", inventaire_bd[i].name, inventaire_bd[i].value); 
         GuiLabel(bounds_see, info_items);
 
         bounds_see.y += TEXTBOX_HEIGHT + PADDING;
         if (GuiButton(bounds_see, "SEE")) {
 
-        }
-        
-        // Rectangle pour le bouton "BUY"
-        Rectangle bounds_buy = {
-            .x = posX,
-            .y = bounds_see.y + TEXTBOX_HEIGHT + PADDING,
-            .width = itemWidth,
-            .height = TEXTBOX_HEIGHT
-        };
-
-        if (GuiButton(bounds_buy, "BUY")) {
-            choix_id_items = items_bd[i].id_inventaire;
-            choix_value_items = items_bd[i].value;
-
-            if (ggbucks < choix_value_items)
-            {
-                knob_log(KNOB_INFO, "Nombre de ggbucks insuffisant");
-            } else {
-                //knob_log(KNOB_INFO, "Nombre de ggbucks suffisant");
-                database_add_inventory(g, items_bd[i].id_inventaire, items_bd[i].value);
-                g->state = Store;
-            }
-            
         }
     }
 
@@ -94,15 +67,4 @@ void ui_store(GameData* g){
     if(GuiButton(bounds,butt_label)){
         g->state = MainMenu;
     }
-    
-    // WinRect sub = {
-    //     .x= cursor.x,
-    //     .y=cursor.y * 3.1f * 0.9f,
-    //     .w=g->win.w - cursor.x,
-    //     .h=g->win.h - cursor.y
-    // };
-    // game_preview_player(sub,g, choix_id_items);
-    
-    
-
 }

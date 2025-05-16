@@ -2,4 +2,4 @@
 
 #include "game.h"
 
-void ui_login(GameData* g);
+void ui_create_char(GameData* g);

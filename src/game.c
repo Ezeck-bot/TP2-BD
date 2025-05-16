@@ -8,14 +8,19 @@
 
 #include "ui_style.h"
 #include "login.h"
+#include "create_charactere.h"
+#include "credit_card.h"
+#include "inventory.h"
 #include "store.h"
 
+#include "database.h"
 
-void game_preview_player(WinRect sub_rect,GameData* g){
-    #define BUMP 16 + 1 
+
+void game_preview_player(WinRect sub_rect,GameData* g, int race){
+    #define BUMP 16
     Rectangle src ={
         .x = 0,
-        .y=g->customer.curr_character.character_classe.race * BUMP,
+        .y=race * BUMP + race * 1,
         .width=16,
         .height=16
     };
@@ -27,6 +32,15 @@ void game_preview_player(WinRect sub_rect,GameData* g){
     }
 }
 void game_init(GameData* g){
+
+    database_start(g);
+    database_init_tables(g);
+    if(database_verification_insert_table(g) == 0){
+        
+    
+        database_insert_tables(g);
+    }
+
     InitWindow(g->win.w,g->win.h,"GoodGame™");
     SetTargetFPS(60);
 
@@ -72,6 +86,14 @@ int game_update(GameData* g){
             ui_store(g);
             break;
         }
+        case Inventoryy:{
+            ui_inventory(g);
+            break;
+        }
+        case CreditCardd:{
+            ui_add_credit_card(g);
+            break;
+        }
         default:
             assert(0 && "Unsupported App state...");
     }
@@ -85,10 +107,17 @@ void game_end(GameData* g){
     UnloadTexture(*g->img);
 
     CloseWindow();
+
+    database_end(g);
 }
 
 #define NUM_ELEMENTS 4
 void ui_main_menu(GameData* g){
+    //cherchons si'il a déja un personnage
+    int nombre_race = database_charactere_race_nombre(g);
+    int nombre_iventory = database_inventory_nombre(g);
+
+
     Vector2 cursor = {.x=g->win.w * 0.5f - g->win.w * 0.25f * 0.5f,.y = g->win.h * 0.5f - (TEXTBOX_HEIGHT +PADDING) * NUM_ELEMENTS};
     static bool is_create_account = false;
     Rectangle bounds = {
@@ -101,30 +130,55 @@ void ui_main_menu(GameData* g){
     if(GuiButton(bounds,"Play game")){
         //@TODO(JS): Add a game maybe :) ? 
     }
-    GuiEnable();
+    if (nombre_race)
+    {
+        GuiDisable();
+    } else {
+        GuiEnable();
+    }
     bounds.y += TEXTBOX_HEIGHT + PADDING;
     if(GuiButton(bounds,"Créer Personnage")){
         g->state = CreateCharacter;
     }
+
+    if (nombre_iventory != 0)
+    {
+        GuiEnable();
+    } else {
+        GuiDisable();
+    }
+    bounds.y += TEXTBOX_HEIGHT + PADDING;
+    if(GuiButton(bounds,"Inventory")){
+        //@TODO: Save to db
+        g->state = Inventoryy;
+    }
+
+    GuiEnable();
     bounds.y += TEXTBOX_HEIGHT + PADDING;
     if(GuiButton(bounds,"Magasin")){
         //@TODO: Save to db
         g->state = Store;
     }
+
+    
     bounds.y += TEXTBOX_HEIGHT + PADDING;
     if(GuiButton(bounds,"Quitter")){
         g->state = Exit;
     }
 
-    WinRect sub = {
-        .x= cursor.x + bounds.width,
-        .y=cursor.y,
-        .w=g->win.w - bounds.width - cursor.x,
-        .h=g->win.h - cursor.y
-    };
-    game_preview_player(sub,g);
-}
+    
+    if (nombre_race != 0)
+    {
+        int race = database_charactere_race(g);
 
-void ui_create_char(GameData* g){
-    assert(0 && "@TODO: Implemente me");
+        WinRect sub = {
+            .x= cursor.x + bounds.width,
+            .y=cursor.y,
+            .w=g->win.w - bounds.width - cursor.x,
+            .h=g->win.h - cursor.y
+        };
+        game_preview_player(sub,g, race);
+        
+
+    }
 }

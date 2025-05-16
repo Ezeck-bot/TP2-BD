@@ -37,7 +37,7 @@ typedef struct {
 } Items;
 
 typedef struct {
-    Items items;
+    Items* items;
     size_t count;
     size_t capacity;
 } Inventory;
@@ -63,6 +63,8 @@ typedef enum {
     Login,
     MainMenu,
     CreateCharacter,
+    CreditCardd,
+    Inventoryy,
     Store,
     Exit
 }Game_State;
@@ -89,12 +91,14 @@ typedef struct {
 } Client;
 
 typedef struct Texture Texture;
+typedef struct sqlite3 sqlite3;
 
 typedef struct {
     Game_State state;
     Client customer;
     WinRect win;
     Texture* img;
+    sqlite3* db;
     #ifdef _DEBUG
     int debug;
     #endif
@@ -104,8 +108,8 @@ void* allocate(size_t size);
 
 void game_init(GameData* g);
 int game_update(GameData* g);
-void game_preview_player(WinRect sub_rect,GameData* g);
+void game_preview_player(WinRect sub_rect,GameData* g, int race);
 void game_end(GameData* g);
 
 void ui_main_menu(GameData* g);
-void ui_create_char(GameData* g);
+//void ui_create_char(GameData* g);
